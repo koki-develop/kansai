@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/generative-ai-go/genai"
 	"github.com/koki-develop/kansai/internal/config"
-	"github.com/koki-develop/kansai/internal/gemini"
+	"github.com/koki-develop/kansai/internal/kansai"
 	"github.com/koki-develop/kansai/internal/util"
 	"github.com/spf13/cobra"
 )
@@ -51,7 +51,7 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		client, err := gemini.New(ctx, apiKey)
+		client, err := kansai.New(ctx, apiKey)
 		if err != nil {
 			return err
 		}
