@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	flagConfigure bool
-	flagAPIKey    string
+	flagConfigure bool   // --configure
+	flagAPIKey    string // --api-key, -k
 )
 
 var rootCmd = &cobra.Command{
@@ -92,7 +92,7 @@ $$$
 
 func init() {
 	rootCmd.Flags().BoolVar(&flagConfigure, "configure", false, "configure API key")
-	rootCmd.Flags().StringVarP(&flagAPIKey, "key", "k", "", "API Key for the Gemini API")
+	rootCmd.Flags().StringVarP(&flagAPIKey, "api-key", "k", "", "API Key for the Gemini API")
 }
 
 func Execute() {
