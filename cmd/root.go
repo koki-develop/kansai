@@ -10,8 +10,8 @@ import (
 
 	"github.com/google/generative-ai-go/genai"
 	"github.com/koki-develop/kansai/internal/config"
+	"github.com/koki-develop/kansai/internal/util"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 	"google.golang.org/api/option"
 )
 
@@ -33,13 +33,11 @@ var rootCmd = &cobra.Command{
 				key = os.Getenv("KANSAI_API_KEY")
 			}
 			if key == "" {
-				fmt.Print("Enter your Gemini API key: ")
-				k, err := term.ReadPassword(int(os.Stdin.Fd()))
+				k, err := util.ReadPassword(os.Stdout, "Enter your Gemini API key")
 				if err != nil {
 					return err
 				}
-				key = string(k)
-				fmt.Println()
+				key = k
 			}
 
 			if err := config.SaveAPIKey(key); err != nil {
