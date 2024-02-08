@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/google/generative-ai-go/genai"
 	"github.com/koki-develop/kansai/internal/config"
 	"github.com/koki-develop/kansai/internal/kansai"
@@ -62,7 +64,12 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		s := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
+		s.Start()
 		err = client.Convert(ctx, ipt.String(), func(p genai.Part) error {
+			if s.Active() {
+				s.Stop()
+			}
 			fmt.Print(p)
 			return nil
 		})
