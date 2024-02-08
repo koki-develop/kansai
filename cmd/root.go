@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/google/generative-ai-go/genai"
 	"github.com/koki-develop/kansai/internal/config"
+	"github.com/koki-develop/kansai/internal/gemini"
 	"github.com/koki-develop/kansai/internal/util"
 	"github.com/spf13/cobra"
-	"google.golang.org/api/option"
 )
 
 var (
@@ -52,9 +51,9 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
+		client, err := gemini.New(ctx, apiKey)
 		if err != nil {
-			panic(err)
+			return err
 		}
 		defer client.Close()
 
@@ -68,22 +67,14 @@ var rootCmd = &cobra.Command{
 $$$
 %s`, ipt.String())
 
-		model := client.GenerativeModel("gemini-pro")
-
-		resp, err := model.GenerateContent(ctx, genai.Text(prompt))
+		err = client.GenerateContentStream(ctx, prompt, func(p genai.Part) error {
+			fmt.Print(p)
+			return nil
+		})
 		if err != nil {
-			panic(err)
+			return err
 		}
 
-		b := new(strings.Builder)
-		for _, c := range resp.Candidates {
-			for _, p := range c.Content.Parts {
-				fmt.Fprint(b, p)
-			}
-		}
-		out := strings.TrimSpace(strings.TrimPrefix(b.String(), "$$$"))
-
-		fmt.Println(out)
 		return nil
 	},
 }
