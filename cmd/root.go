@@ -9,8 +9,15 @@ import (
 	"strings"
 
 	"github.com/google/generative-ai-go/genai"
+	"github.com/koki-develop/kansai/internal/config"
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 	"google.golang.org/api/option"
+)
+
+var (
+	flagConfigure bool
+	flagAPIKey    string
 )
 
 var rootCmd = &cobra.Command{
@@ -18,8 +25,33 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 
-		// TODO: from config file or flag or env
-		apiKey := os.Getenv("GEMINI_API_KEY")
+		if flagConfigure {
+			key := flagAPIKey
+			if key == "" {
+				key = os.Getenv("KANSAI_API_KEY")
+			}
+			if key == "" {
+				fmt.Print("Enter your Gemini API key: ")
+				k, err := term.ReadPassword(int(os.Stdin.Fd()))
+				if err != nil {
+					return err
+				}
+				key = string(k)
+				fmt.Println()
+			}
+
+			if err := config.SaveAPIKey(key); err != nil {
+				return err
+			}
+
+			return nil
+		}
+
+		apiKey, err := config.LoadAPIKey()
+		if err != nil {
+			return err
+		}
+
 		client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
 		if err != nil {
 			panic(err)
@@ -49,11 +81,16 @@ $$$
 				fmt.Fprint(b, p)
 			}
 		}
-		out := strings.TrimSpace(strings.TrimPrefix(b.String(), "$$---$$"))
+		out := strings.TrimSpace(strings.TrimPrefix(b.String(), "$$$"))
 
 		fmt.Println(out)
 		return nil
 	},
+}
+
+func init() {
+	rootCmd.Flags().BoolVar(&flagConfigure, "configure", false, "configure API key")
+	rootCmd.Flags().StringVarP(&flagAPIKey, "key", "k", "", "API Key for the Gemini API")
 }
 
 func Execute() {
