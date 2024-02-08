@@ -22,6 +22,7 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:  "kansai",
+	Long: "kansai is a CLI tool for converting text to Kansai dialect.",
 	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
