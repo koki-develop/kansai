@@ -21,7 +21,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use: "kansai",
+	Use:  "kansai",
+	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 
