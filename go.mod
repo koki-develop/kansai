@@ -5,6 +5,7 @@ go 1.22.0
 require (
 	github.com/google/generative-ai-go v0.7.0
 	github.com/spf13/cobra v1.8.0
+	golang.org/x/term v0.16.0
 	google.golang.org/api v0.162.0
 )
 
