@@ -62,12 +62,7 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		prompt := fmt.Sprintf(`以下の $$$ 以降の文章を、できる限り元の文章の意味を保ったまま、自然な関西弁に変換してください。
-なお、余計な解説や説明は一切不要です。変換後の文章のみを出力してください。
-$$$
-%s`, ipt.String())
-
-		err = client.GenerateContentStream(ctx, prompt, func(p genai.Part) error {
+		err = client.Convert(ctx, ipt.String(), func(p genai.Part) error {
 			fmt.Print(p)
 			return nil
 		})
