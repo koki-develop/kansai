@@ -77,6 +77,7 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		fmt.Println()
 		return nil
 	},
 }
