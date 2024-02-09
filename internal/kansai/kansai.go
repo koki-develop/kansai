@@ -3,6 +3,7 @@ package kansai
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/iterator"
@@ -10,8 +11,8 @@ import (
 )
 
 const (
-	promptFormat = `以下の $$$ 以降のテキストを自然な関西弁に変換してください。
-テキストが日本語以外の言語の場合は、まず日本語に翻訳した上で関西弁に変換してください。
+	promptFormat = `以下の $$$ 以降のテキストを、一切の前置きなしに自然な関西弁に変換してください。
+テキストが日本語以外の言語の場合は、まずそれを日本語に翻訳した上で、関西弁に変換してください。
 $$$
 %s`
 )
@@ -33,7 +34,7 @@ func (c *Client) Close() error {
 	return c.client.Close()
 }
 
-func (c *Client) Convert(ctx context.Context, s string, callback func(p genai.Part) error) error {
+func (c *Client) Convert(ctx context.Context, s string, callback func(p string) error) error {
 	model := c.client.GenerativeModel("gemini-pro")
 
 	iter := model.GenerateContentStream(ctx, genai.Text(fmt.Sprintf(promptFormat, s)))
@@ -46,9 +47,16 @@ func (c *Client) Convert(ctx context.Context, s string, callback func(p genai.Pa
 			return err
 		}
 
+		first := true
 		for _, c := range resp.Candidates {
 			for _, p := range c.Content.Parts {
-				if err := callback(p); err != nil {
+				s := fmt.Sprint(p)
+				if first {
+					s = strings.TrimSpace(strings.TrimPrefix(s, "$$$")) // たまに先頭に $$$ が含まれることがあるので除去
+					first = false
+				}
+
+				if err := callback(s); err != nil {
 					return err
 				}
 			}

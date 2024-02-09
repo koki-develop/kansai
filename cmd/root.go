@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
-	"github.com/google/generative-ai-go/genai"
 	"github.com/koki-develop/kansai/internal/config"
 	"github.com/koki-develop/kansai/internal/kansai"
 	"github.com/koki-develop/kansai/internal/util"
@@ -66,7 +65,7 @@ var rootCmd = &cobra.Command{
 
 		s := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
 		s.Start()
-		err = client.Convert(ctx, ipt.String(), func(p genai.Part) error {
+		err = client.Convert(ctx, ipt.String(), func(p string) error {
 			if s.Active() {
 				s.Stop()
 			}
