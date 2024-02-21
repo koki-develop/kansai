@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-Powered by Gemini API.
+Powered by Gemini.
 </p>
 
 <p align="center">
